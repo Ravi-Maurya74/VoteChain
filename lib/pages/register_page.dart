@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:voting_blockchain/helpers/networking.dart';
+import 'package:voting_blockchain/pages/login_page.dart';
 import 'package:voting_blockchain/widgets/custom_button.dart';
 import 'package:voting_blockchain/widgets/custom_password_field.dart';
 import 'package:voting_blockchain/widgets/custom_text_field.dart';
@@ -51,11 +52,8 @@ class RegisterPage extends StatelessWidget {
                 iconData: Icons.lock,
                 textEditingController: passwordController,
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              const SizedBox(
-                height: 70,
+              SizedBox(
+                height: dimensions.height * 0.20,
               ),
               CustomButton(
                   dimensions: dimensions,
@@ -123,6 +121,11 @@ class RegisterPage extends StatelessWidget {
                     onPressed: () {
                       // Navigator.pushReplacementNamed(
                       //     context, LoginPage.routeName);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ));
                     },
                     child: Text(
                       'Sign In',
@@ -133,6 +136,9 @@ class RegisterPage extends StatelessWidget {
                     ),
                   )
                 ],
+              ),
+              SizedBox(
+                height: dimensions.height * 0.08,
               ),
             ],
           ),

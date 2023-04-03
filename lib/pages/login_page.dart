@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:voting_blockchain/helpers/networking.dart';
+import 'package:voting_blockchain/pages/register_page.dart';
 import 'package:voting_blockchain/widgets/custom_button.dart';
 import 'package:voting_blockchain/widgets/custom_password_field.dart';
 import 'package:voting_blockchain/widgets/custom_text_field.dart';
@@ -48,24 +53,28 @@ class LoginPage extends StatelessWidget {
                   dimensions: dimensions,
                   label: 'Sign In',
                   action: () async {
-                    // if (emailController.text.isEmpty ||
-                    //     passwordController.text.isEmpty) {
-                    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    //       content: Text('Please provide complete info.')));
-                    //   return;
-                    // }
-                    // Response response = await NetworkHelper().postData(
-                    //     url: 'login/',
-                    //     jsonMap: {
-                    //       "email": emailController.text,
-                    //       "password": passwordController.text
-                    //     });
+                    if (emailController.text.isEmpty ||
+                        passwordController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Please provide complete info.')));
+                      return;
+                    }
+                    Response response = await NetworkHelper().postData(
+                        url: 'login/',
+                        jsonMap: {
+                          "email_id": emailController.text,
+                          "password": passwordController.text
+                        });
+                    var data = jsonDecode(response.body);
+                    if (response.statusCode == 400) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(data["message"])));
+                      return;
+                    }
                     // if (response.statusCode == 200) {
                     //   var jsonResponse = jsonDecode(response.body);
                     //   if (jsonResponse['status'] == 400) {
-                    //     ScaffoldMessenger.of(context).showSnackBar(
-                    //         SnackBar(content: Text(jsonResponse['prompt'])));
-                    //     return;
+
                     //   }
                     //   var data = jsonResponse['data'];
                     //   box.write('user_id', data['id'] as int);
@@ -104,6 +113,12 @@ class LoginPage extends StatelessWidget {
                     onPressed: () {
                       // Navigator.pushReplacementNamed(
                       //     context, RegisterPage.routeName);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterPage(),
+                        ),
+                      );
                     },
                     child: Text(
                       'Sign Up',

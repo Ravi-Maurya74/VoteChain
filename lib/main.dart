@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:voting_blockchain/pages/home_page.dart';
 import 'package:voting_blockchain/pages/login_page.dart';
 import 'package:voting_blockchain/pages/register_page.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
           textTheme: TextTheme(
             titleLarge: TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Colors.white.withOpacity(0.9)),
             bodyMedium: const TextStyle(fontSize: 18, color: Colors.white70),
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
           drawerTheme: const DrawerThemeData(
             backgroundColor: Color.fromRGBO(24, 25, 32, 1),
           )),
-      home: RegisterPage(),
+      home: HomePage(),
     );
   }
 }
