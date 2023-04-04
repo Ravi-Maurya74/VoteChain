@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class HomePageDrawer extends StatelessWidget {
   const HomePageDrawer({
     Key? key,
@@ -12,7 +11,7 @@ class HomePageDrawer extends StatelessWidget {
       child: Column(children: [
         AppBar(
           title: Text(
-            'Movie Apps',
+            'Voting App',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           leading: null,
@@ -33,11 +32,11 @@ class HomePageDrawer extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(
-            Icons.add_circle,
+            Icons.how_to_vote_sharp,
             color: Colors.white,
           ),
           title: Text(
-            'Add movie',
+            'Ongoing Polls',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onTap: () {
@@ -46,11 +45,11 @@ class HomePageDrawer extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(
-            Icons.bookmarks_rounded,
+            Icons.bar_chart_outlined,
             color: Colors.white,
           ),
           title: Text(
-            'My Bookmarks',
+            'Declared Polls',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           onTap: () async {

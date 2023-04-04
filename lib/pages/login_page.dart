@@ -1,8 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:voting_blockchain/Providers/loader.dart';
+import 'package:voting_blockchain/Providers/voter.dart';
 import 'package:voting_blockchain/helpers/networking.dart';
+import 'package:voting_blockchain/pages/home_page.dart';
 import 'package:voting_blockchain/pages/register_page.dart';
 import 'package:voting_blockchain/widgets/custom_button.dart';
 import 'package:voting_blockchain/widgets/custom_password_field.dart';
@@ -11,6 +16,7 @@ import 'package:voting_blockchain/widgets/custom_text_field.dart';
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final box = GetStorage();
   LoginPage({super.key});
 
   @override
@@ -71,33 +77,29 @@ class LoginPage extends StatelessWidget {
                           SnackBar(content: Text(data["message"])));
                       return;
                     }
-                    // if (response.statusCode == 200) {
-                    //   var jsonResponse = jsonDecode(response.body);
-                    //   if (jsonResponse['status'] == 400) {
+                    box.write('voter_id', data['id'] as int);
+                    Provider.of<Voter>(context, listen: false).update(
+                      id: data['id'],
+                      email: data['user_email'],
+                      password: data['password'],
+                      name: data['name'],
+                    );
 
-                    //   }
-                    //   var data = jsonResponse['data'];
-                    //   box.write('user_id', data['id'] as int);
-                    //   // print(data);
-                    //   Provider.of<User>(context, listen: false).update(
-                    //       id: data['id'],
-                    //       email: data['email'],
-                    //       password: data['password'],
-                    //       name: data['name'],
-                    //       profilePicUrl: data['profile_pic_url']);
-                    //   final results = await Future.wait([
-                    //     NetworkHelper().getData(url: 'genre/'),
-                    //     NetworkHelper().getData(url: 'topRatedMovies/'),
-                    //     NetworkHelper().getData(url: 'mostUpvotedMovies/'),
-                    //   ]);
-                    //   final loader =
-                    //       Provider.of<Loader>(context, listen: false);
-                    //   loader.data.add(response);
-                    //   loader.data.addAll(results);
-                    //   // ignore: use_build_context_synchronously
-                    //   Navigator.pushReplacementNamed(
-                    //       context, HomePage.routeName);
-                    // }
+                    final results = await Future.wait([
+                      // NetworkHelper().getData(url: 'genre/'),
+                      // NetworkHelper().getData(url: 'topRatedMovies/'),
+                      // NetworkHelper().getData(url: 'mostUpvotedMovies/'),
+                    ]);
+
+                    final loader = Provider.of<Loader>(context, listen: false);
+                    loader.data.add(response);
+                    // loader.data.addAll(results);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(),
+                        ));
+
                   }),
               const SizedBox(
                 height: 20,
