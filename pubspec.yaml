@@ -40,6 +40,8 @@ dependencies:
   flutter_typeahead: ^4.3.7
   loading_animation_widget: ^1.2.0+4
   get_storage: ^2.1.1
+  intl: ^0.18.0
+  syncfusion_flutter_charts: ^21.1.38
 
 dev_dependencies:
   flutter_test:

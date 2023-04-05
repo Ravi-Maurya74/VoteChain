@@ -23,10 +23,10 @@ class Loader {
     if (hasUser) {
       int voterId = box.read('voter_id');
       final results = await Future.wait([
-        NetworkHelper().postData(url: "identifyVoter/", jsonMap: {
-          "voter_id":voterId
-        }),
-        // NetworkHelper().getData(url: 'genre/'),
+        NetworkHelper()
+            .postData(url: "identifyVoter/", jsonMap: {"voter_id": voterId}),
+        NetworkHelper().postData(
+            url: "getVoterElections/", jsonMap: {"voter_id": voterId}),
         // NetworkHelper().getData(url: 'topRatedMovies/'),
         // NetworkHelper().getData(url: 'mostUpvotedMovies/'),
       ]);
@@ -44,4 +44,3 @@ class Loader {
     }
   }
 }
-

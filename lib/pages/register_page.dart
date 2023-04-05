@@ -103,13 +103,15 @@ class RegisterPage extends StatelessWidget {
                     );
 
                     final results = await Future.wait([
-                      // NetworkHelper().getData(url: 'genre/'),
+                      NetworkHelper().postData(
+                          url: "getVoterElections/",
+                          jsonMap: {"voter_id": data['id']}),
                       // NetworkHelper().getData(url: 'topRatedMovies/'),
                       // NetworkHelper().getData(url: 'mostUpvotedMovies/'),
                     ]);
                     final loader = Provider.of<Loader>(context, listen: false);
                     loader.data.add(response);
-                    // loader.data.addAll(results);
+                    loader.data.addAll(results);
 
                     Navigator.pushReplacement(
                         context,

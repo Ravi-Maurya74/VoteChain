@@ -5,7 +5,7 @@ import 'package:voting_blockchain/Providers/loader.dart';
 import 'package:voting_blockchain/Providers/voter.dart';
 import 'package:voting_blockchain/pages/opening_page.dart';
 
-void main() async{
+void main() async {
   await GetStorage.init();
   runApp(const MyApp());
 }
@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData.dark().copyWith(
             textTheme: TextTheme(

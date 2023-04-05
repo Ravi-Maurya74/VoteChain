@@ -91,10 +91,11 @@ class OpeningAnimationsPageState extends State<OpeningAnimationsPage> {
         var data = jsonDecode(voterData.body);
         if (!mounted) return;
         Provider.of<Voter>(context, listen: false).update(
-            id: data['id'],
-            email: data['user_email'],
-            password: data['password'],
-            name: data['name'],);
+          id: data['id'],
+          email: data['user_email'],
+          password: data['password'],
+          name: data['name'],
+        );
         Navigator.pushReplacement(
             context, ThisIsFadeRoute(page: HomePage(), route: HomePage()));
       } else {
@@ -197,7 +198,7 @@ class OpeningAnimationsPageState extends State<OpeningAnimationsPage> {
                     duration: const Duration(seconds: 2),
                     curve: Curves.fastLinearToSlowEaseIn,
                     child: const Text(
-                      "CineCritique",
+                      "Voting App",
                       style: TextStyle(fontFamily: 'Canterbury', fontSize: 40),
                     ),
                   )
