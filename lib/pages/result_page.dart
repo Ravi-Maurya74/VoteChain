@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:voting_blockchain/helpers/networking.dart';
 
 class ResultPage extends StatelessWidget {
   ResultPage({super.key, required this.pollData, required this.result});
@@ -26,16 +31,24 @@ class ResultPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Poll: 2",
+                      "Poll: ${pollData["id"]}",
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium!
                           .copyWith(fontFamily: "Alkatra"),
                     ),
-                    Icon(Icons.how_to_vote_sharp),
+                    Text(
+                      DateFormat.yMMMMd('en_US').format(DateFormat("yyyy-MM-dd")
+                          .parse((pollData['created'] as String)
+                              .substring(0, 10))),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontFamily: "Alkatra"),
+                    ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Padding(
@@ -80,7 +93,7 @@ class ResultPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 ResultRow(
@@ -93,9 +106,9 @@ class ResultPage extends StatelessWidget {
                 ),
                 ResultRow(
                   label: "Total :",
-                  value: "${_totalVotes} votes",
+                  value: "$_totalVotes votes",
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
               ],
@@ -104,7 +117,55 @@ class ResultPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          var result = await showTextInputDialog(
+            autoSubmit: true,
+            barrierDismissible: true,
+            message: "Enter vote hash to verify:",
+            title: "Verify",
+            context: context,
+            textFields: [
+              DialogTextField(
+                validator: (value) {
+                  if (value == null) {
+                    return null;
+                  }
+                  if (value.length != 66) {
+                    return "Hash must be 66 characters long.";
+                  }
+                },
+              ),
+            ],
+          );
+          if (result == null) return;
+          String hash = result[0];
+          var response = await NetworkHelper().postData(
+              url: "verifyVote/",
+              jsonMap: {"election_id": pollData["id"], "hash": hash});
+          if (response.statusCode != 200) {
+            await showOkAlertDialog(
+              context: context,
+              title: "Invalid Hash",
+              message:
+                  "Please enter the hash you received on voting on this poll only.",
+            );
+            return;
+          }
+          String choice_name = jsonDecode(response.body)["choice"]["name"];
+          showOkAlertDialog(
+            context: context,
+            title: "Result",
+            message: "You voted for $choice_name",
+          );
+        },
+        backgroundColor: Colors.white,
+        enableFeedback: true,
+        elevation: 10,
+        child: const Icon(
+          Icons.verified_user,
+          color: Colors.black,
+          size: 35,
+        ),
       ),
     );
   }
@@ -131,7 +192,7 @@ class ResultRow extends StatelessWidget {
                 .copyWith(fontFamily: "Alkatra"),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 20,
         ),
         Expanded(

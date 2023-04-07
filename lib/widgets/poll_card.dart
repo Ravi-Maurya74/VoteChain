@@ -1,37 +1,80 @@
 import 'dart:convert';
-import 'package:http/http.dart';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:voting_blockchain/helpers/networking.dart';
 import 'package:voting_blockchain/pages/result_page.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:cool_alert/cool_alert.dart';
+import 'package:voting_blockchain/pages/vote_page.dart';
 
-class PollCard extends StatelessWidget {
+class PollCard extends StatefulWidget {
   const PollCard({super.key, required this.pollData});
   final dynamic pollData;
 
   @override
+  State<PollCard> createState() => _PollCardState();
+}
+
+class _PollCardState extends State<PollCard> {
+  @override
   Widget build(BuildContext context) {
     final created = DateFormat("yyyy-MM-dd")
-        .parse((pollData['created'] as String).substring(0, 10));
+        .parse((widget.pollData['created'] as String).substring(0, 10));
     final date = DateFormat.yMMMMd('en_US').format(created);
-    return GestureDetector(
+    return Bounceable(
       onTap: () async {
-        final response = await NetworkHelper().postData(
-            url: "getElectionResult/",
-            jsonMap: {"election_id": pollData["id"]});
-        Navigator.push(
+        if (widget.pollData["running"] && widget.pollData["has_voted"]) {
+          CoolAlert.show(
+              context: context,
+              type: CoolAlertType.info,
+              text:
+                  "You have already voted! Please wait till the election is over to view the results.",
+              barrierDismissible: false);
+          return;
+        } else if (widget.pollData["running"]) {
+          var result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VotePage(
+                  pollData: widget.pollData,
+                ),
+              ));
+          if (result != null && result == true) {
+            setState(() {
+              widget.pollData["has_voted"] = true;
+              widget.pollData["number_of_votes"] =
+                  widget.pollData["number_of_votes"] + 1;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Vote hash copied to clipboard!')));
+          }
+        } else {
+          CoolAlert.show(
+            context: context,
+            type: CoolAlertType.loading,
+            text: 'Loading...',
+            barrierDismissible: false,
+          );
+          final response = await NetworkHelper().postData(
+              url: "getElectionResult/",
+              jsonMap: {"election_id": widget.pollData["id"]});
+          Navigator.pop(context);
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ResultPage(
-                  pollData: pollData, result: jsonDecode(response.body)),
-            ));
+                pollData: widget.pollData,
+                result: jsonDecode(response.body),
+              ),
+            ),
+          );
+        }
       },
       child: Container(
         decoration: BoxDecoration(
           // color: Colors.deepPurple[300],
           borderRadius: BorderRadius.circular(20),
-          gradient: pollData["has_voted"]
+          gradient: widget.pollData["has_voted"]
               ? LinearGradient(
                   // colors: [
                   //   Colors.deepPurple[300]!,
@@ -61,7 +104,7 @@ class PollCard extends StatelessWidget {
                   end: Alignment.topRight,
                 ),
         ),
-        margin: EdgeInsets.only(bottom: 20, top: 10),
+        margin: const EdgeInsets.only(bottom: 20, top: 10),
         // height: 200,
         width: double.infinity,
         child: Padding(
@@ -78,7 +121,7 @@ class PollCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Poll: ${pollData["id"]}",
+                    "Poll: ${widget.pollData["id"]}",
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall!
@@ -100,7 +143,7 @@ class PollCard extends StatelessWidget {
                 height: 10,
               ),
               Text(
-                pollData["title"],
+                widget.pollData["title"],
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       fontFamily: "Alkatra",
                       fontWeight: FontWeight.w700,
@@ -121,7 +164,7 @@ class PollCard extends StatelessWidget {
                     width: 3,
                   ),
                   Text(
-                    pollData["number_of_votes"].toString(),
+                    widget.pollData["number_of_votes"].toString(),
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall!
@@ -143,7 +186,7 @@ class PollCard extends StatelessWidget {
                     size: 25,
                   ),
                   Text(
-                    pollData["number_of_choices"].toString(),
+                    widget.pollData["number_of_choices"].toString(),
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall!
@@ -151,7 +194,7 @@ class PollCard extends StatelessWidget {
                     textAlign: TextAlign.end,
                   ),
                   const Spacer(),
-                  pollData["running"]
+                  widget.pollData["running"]
                       ? const Icon(Icons.how_to_vote_sharp)
                       : const Icon(Icons.bar_chart_outlined),
                 ],

@@ -1,35 +1,48 @@
+import 'dart:convert';
+
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:voting_blockchain/helpers/networking.dart';
+import 'package:voting_blockchain/pages/declared_polls.dart';
+import 'package:voting_blockchain/pages/ongoing_polls.dart';
 
 class HomePageDrawer extends StatelessWidget {
-  const HomePageDrawer({
+  HomePageDrawer({
     Key? key,
   }) : super(key: key);
+  late GetStorage box;
 
   @override
   Widget build(BuildContext context) {
+    box = GetStorage();
     return Drawer(
       child: Column(children: [
         AppBar(
           title: Text(
             'Voting App',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(fontFamily: "Alkatra"),
           ),
           leading: null,
           automaticallyImplyLeading: false,
         ),
-        ListTile(
-          leading: const Icon(
-            Icons.person,
-            color: Colors.white,
-          ),
-          title: Text(
-            'Account',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          onTap: () {
-            // Navigator.pushNamed(context, ChangeAccount.routeName);
-          },
-        ),
+        // ListTile(
+        //   leading: const Icon(
+        //     Icons.person,
+        //     color: Colors.white,
+        //   ),
+        //   title: Text(
+        //     'Account',
+        //     style: Theme.of(context).textTheme.bodyMedium,
+        //   ),
+        //   onTap: () {
+        //     // Navigator.pushNamed(context, ChangeAccount.routeName);
+        //   },
+        // ),
         ListTile(
           leading: const Icon(
             Icons.how_to_vote_sharp,
@@ -37,10 +50,25 @@ class HomePageDrawer extends StatelessWidget {
           ),
           title: Text(
             'Ongoing Polls',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(fontFamily: "Alkatra"),
           ),
-          onTap: () {
-            // Navigator.pushNamed(context, AddMoviePage.routeName);
+          onTap: () async {
+            var voterId = box.read("voter_id");
+            var response = await NetworkHelper().postData(
+              url: "getOngoingVOterElections/",
+              jsonMap: {"voter_id": voterId},
+            );
+            var polls = jsonDecode(response.body);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OngoingPolls(
+                    polls: polls,
+                  ),
+                ));
           },
         ),
         ListTile(
@@ -50,17 +78,25 @@ class HomePageDrawer extends StatelessWidget {
           ),
           title: Text(
             'Declared Polls',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(fontFamily: "Alkatra"),
           ),
           onTap: () async {
-            // var response = await NetworkHelper().postData(
-            //     url: 'getBookmarkedMovies/',
-            //     jsonMap: {
-            //       "user_id": Provider.of<User>(context, listen: false).id
-            //     });
-            // var data = jsonDecode(utf8.decode(response.bodyBytes));
-            // Navigator.pushNamed(context, FilteredMovies.routeName,
-            //     arguments: data);
+            var voterId = box.read("voter_id");
+            var response = await NetworkHelper().postData(
+              url: "getClosedVoterElections/",
+              jsonMap: {"voter_id": voterId},
+            );
+            var polls = jsonDecode(response.body);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DeclaredPolls(
+                    polls: polls,
+                  ),
+                ));
           },
         ),
         ListTile(
@@ -70,18 +106,21 @@ class HomePageDrawer extends StatelessWidget {
           ),
           title: Text(
             'Log out',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(fontFamily: "Alkatra"),
           ),
           onTap: () {
-            // CoolAlert.show(
-            //   context: context,
-            //   type: CoolAlertType.confirm,
-            //   confirmBtnText: 'Confirm',
-            //   onConfirmBtnTap: () {
-            //     GetStorage().remove('user_id');
-            //     SystemNavigator.pop();
-            //   },
-            // );
+            CoolAlert.show(
+              context: context,
+              type: CoolAlertType.confirm,
+              confirmBtnText: 'Confirm',
+              onConfirmBtnTap: () {
+                GetStorage().remove('voter_id');
+                SystemNavigator.pop();
+              },
+            );
           },
         ),
       ]),
