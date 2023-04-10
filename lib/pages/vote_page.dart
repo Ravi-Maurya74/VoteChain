@@ -77,6 +77,7 @@ class _VotePageState extends State<VotePage> {
                 height: 20,
               ),
               ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) => Bounceable(
                     onTap: () {

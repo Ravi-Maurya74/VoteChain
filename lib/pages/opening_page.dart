@@ -198,8 +198,8 @@ class OpeningAnimationsPageState extends State<OpeningAnimationsPage> {
                     duration: const Duration(seconds: 2),
                     curve: Curves.fastLinearToSlowEaseIn,
                     child: const Text(
-                      "Voting App",
-                      style: TextStyle(fontFamily: 'Canterbury', fontSize: 40),
+                      "VoteChain",
+                      style: TextStyle(fontFamily: 'Kaushan', fontSize: 55),
                     ),
                   )
                 : const SizedBox(),

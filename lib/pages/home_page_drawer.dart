@@ -21,7 +21,7 @@ class HomePageDrawer extends StatelessWidget {
       child: Column(children: [
         AppBar(
           title: Text(
-            'Voting App',
+            'VoteChain',
             style: Theme.of(context)
                 .textTheme
                 .titleMedium!

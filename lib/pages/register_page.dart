@@ -93,7 +93,7 @@ class RegisterPage extends StatelessWidget {
                       return;
                     }
                     var data = jsonDecode(response.body);
-                    box.write('user_id', data['id'] as int);
+                    box.write('voter_id', data['id'] as int);
 
                     Provider.of<Voter>(context, listen: false).update(
                       id: data['id'],

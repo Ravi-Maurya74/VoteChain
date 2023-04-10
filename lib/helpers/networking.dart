@@ -3,7 +3,7 @@ import 'dart:convert';
 
 class NetworkHelper {
   // static String baseUrl = 'http://neutrinonda.pythonanywhere.com/api/';
-  static String baseUrl = 'https://7e7d-117-219-22-193.in.ngrok.io/api/';
+  static String baseUrl = 'https://64f0-2401-4900-1c3d-1220-101e-3423-58f7-70a5.in.ngrok.io/api/';
 
   Future<Response> getData({required String url}) async {
     final response = await get(
